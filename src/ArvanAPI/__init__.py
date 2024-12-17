@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import os
 import requests
 
-load_dotenv(dotenv_path='../.env')
+load_dotenv(dotenv_path='../../.env')
 
 API_BASE_URL = "https://napi.arvancloud.ir"
 

@@ -3,11 +3,12 @@ from dotenv import load_dotenv
 import os
 from ArvanAPI import ArvanAPI
 
+load_dotenv()
+
 class IAAS:
     def __init__(self):
         self.regions = ["ir-thr-ba1","ir-thr-fr1","ir-tbz-sh1","ir-thr-si1"]
         self.url = ArvanAPI.BASE_URL
-        load_dotenv()
         self.api_key = os.getenv("API_KEY")
         self.headers = {
             "Authorization": self.api_key,
