@@ -1,4 +1,5 @@
 from aiogram.filters import BaseFilter
+from aiogram.filters.callback_data import CallbackData
 from aiogram.types import Message, CallbackQuery
 import os
 from dotenv import load_dotenv
@@ -8,6 +9,9 @@ load_dotenv(dotenv_path='../../.env')
 
 # Create your filters here.
 class IsAdmin(BaseFilter):
+    """
+    This filter checks if the user is an admin or not.
+    """ 
     def __init__(self):
         self.admins = os.getenv("INITIAL_ADMIN_IDS") # output like this [5894416619, 5894416619]
         self.admins = self.admins.replace("[", "").replace("]", "").replace(" ", "").split(",")
@@ -18,6 +22,9 @@ class IsAdmin(BaseFilter):
             return True
         else:
             return False
+    
+    async def __call__(self, message: Message) -> bool:
+        return await self.check(message)
 
 class IsCallbackFromAdmin(BaseFilter):
     def __init__(self):
@@ -30,3 +37,11 @@ class IsCallbackFromAdmin(BaseFilter):
             return True
         else:
             return False 
+
+    async def __call__(self, callback_query: CallbackQuery) -> bool:
+        return await self.check(callback_query)
+
+class IaasServerCallback(CallbackData, prefix="iaas"):
+    command: str
+    server_id: str | None = None
+    execute: str | None = None
