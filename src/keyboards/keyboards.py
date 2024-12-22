@@ -8,7 +8,7 @@ Start_keyboard = InlineKeyboardMarkup(inline_keyboard=[
     [
         InlineKeyboardButton(
             text="Iaas 🚀", 
-            callback_data=IaasServerCallback(command="home").pack()
+            callback_data=IaasServerCallback(IaasCommand="home").pack()
         ),
     ],
     [
@@ -30,15 +30,11 @@ class IaasKeyboardBuilder(InlineKeyboardBuilder):
     def Home(self):
         self.add(InlineKeyboardButton(
             text="Create VM",
-            callback_data=IaasServerCallback(command="create").pack()
+            callback_data=IaasServerCallback(IaasCommand="create").pack()
         ))
         self.add(InlineKeyboardButton(
             text="List VMs",
-            callback_data=IaasServerCallback(command="list").pack()
-        ))
-        self.add(InlineKeyboardButton(
-            text="Delete VM",
-            callback_data=IaasServerCallback(command="delete").pack()
+            callback_data=IaasServerCallback(IaasCommand="regions").pack()
         ))
         self.add(InlineKeyboardButton(
             text="Back",
@@ -55,11 +51,46 @@ class IaasKeyboardBuilder(InlineKeyboardBuilder):
         self.add(InlineKeyboardButton(text="Back", callback_data="Iaas"))
         return self
     
-    def region_list
-
-    def Server_List(self, servers: list):
-        for server in servers:
-            self.add(InlineKeyboardButton(text=server["name"], callback_data=f"Iaas_Server_{server['id']}"))
+    def Region_List(self, regions: list):
+        for region in regions:
+            self.add(InlineKeyboardButton(
+                text=region,
+                callback_data=IaasServerCallback(IaasCommand="servers", region=region).pack()
+            ))
         self.adjust(2)
-        self.add(InlineKeyboardButton(text="Back", callback_data="Iaas"))
+        self.add(InlineKeyboardButton(text="Back", callback_data=IaasServerCallback(IaasCommand="home").pack()))
+        return self
+
+    def Server_List(self, servers: list, region: str):
+        for server in servers:
+            self.add(InlineKeyboardButton(
+                text=server["name"], 
+                callback_data=IaasServerCallback(
+                    command="server_info",
+                    server_id=server["id"],
+                    region=region
+                ).pack()
+            ))
+        self.adjust(2)
+        self.add(InlineKeyboardButton(text="Back", callback_data=IaasServerCallback(IaasCommand="regions").pack()))
+        return self
+        
+    def Server_Actions(self, server_id: str, region: str):
+        actions = [
+            ("Delete", "delete"),
+            ("Reboot", "reboot"),
+            ("Power Off", "power_off"),
+            ("Power On", "power_on"),
+        ]
+        for text, action in actions:
+            self.add(InlineKeyboardButton(
+                text=text,
+                callback_data=IaasServerCallback(
+                    command=action,
+                    server_id=server_id,
+                    region=region
+                ).pack()
+            ))
+        self.adjust(2)
+        self.add(InlineKeyboardButton(text="Back", callback_data=IaasServerCallback(IaasCommand="servers", region=region).pack()))
         return self

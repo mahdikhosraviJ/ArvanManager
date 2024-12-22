@@ -14,7 +14,7 @@ class IsAdmin(BaseFilter):
     """ 
     def __init__(self):
         self.admins = os.getenv("INITIAL_ADMIN_IDS") # output like this [5894416619, 5894416619]
-        self.admins = self.admins.replace("[", "").replace("]", "").replace(" ", "").split(",")
+        self.admins = self.admins.replace("[", "").replace("]", "").split(",")
         self.admins = [int(admin) for admin in self.admins]
 
     async def check(self, message: Message) -> bool:
@@ -29,7 +29,7 @@ class IsAdmin(BaseFilter):
 class IsCallbackFromAdmin(BaseFilter):
     def __init__(self):
         self.admins = os.getenv("INITIAL_ADMIN_IDS") # output like this [5894416619, 5894416619]
-        self.admins = self.admins.replace("[", "").replace("]", "").replace(" ", "").split(",")
+        self.admins = self.admins.replace("[", "").replace("]", "").split(",")
         self.admins = [int(admin) for admin in self.admins]
 
     async def check(self, callback_query: CallbackQuery) -> bool:
@@ -41,7 +41,17 @@ class IsCallbackFromAdmin(BaseFilter):
     async def __call__(self, callback_query: CallbackQuery) -> bool:
         return await self.check(callback_query)
 
-class IaasServerCallback(CallbackData, prefix="iaas"):
-    command: str
-    server_id: str | None = None
-    execute: str | None = None
+class IaasServerCallback(CallbackData, prefix="Iaas"):
+    IaasCommand: str
+    server_id: str = None
+    region: str = None
+
+class IaasFilter(BaseFilter):
+    async def check(self, callback_query: CallbackQuery) -> bool:
+        if IaasServerCallback.unpack(callback_query.data).IaasCommand:
+            return True
+        else:
+            return False
+
+    async def __call__(self, callback_query: CallbackQuery) -> bool:
+        return await self.check(callback_query)

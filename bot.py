@@ -3,12 +3,18 @@ import logging
 
 from aiogram import Bot, Dispatcher
 from aiogram.client.bot import DefaultBotProperties
+from aiogram.types import ErrorEvent
 
 from config import Config, load_config
 from src.handlers import Start, Iaas
 
 
 logger = logging.getLogger(__name__)
+
+
+async def error_handler(event: ErrorEvent, bot: Bot):
+    logger.error(f"Update: {event.update}")
+    logger.error(f"Exception: {event.exception}")
 
 
 async def main():
@@ -27,7 +33,6 @@ async def main():
 
     dp.include_router(Start.router)
     dp.include_router(Iaas.router)
-    
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot)
